@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PokeMulti Hub</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #0f172a;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra de Controle Superior */
+    #toolbar {
+      height: 48px;
+      background-color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      border-bottom: 1px solid #334155;
+      z-index: 10;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    button {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.active {
+      background: #2563eb;
+      border-color: #3b82f6;
+    }
+
+    /* Container dos Navegadores */
+    #grid-container {
+      flex: 1;
+      display: grid;
+      gap: 2px;
+      background-color: #020617;
+      width: 100%;
+      height: calc(100% - 48px);
+    }
+
+    /* Layouts do Grid */
+    .grid-1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+    /* Estilo de cada Webview/Frame */
+    .browser-box {
+      position: relative;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .browser-box.hidden {
+      display: none !important;
+    }
+
+    .url-bar {
+      height: 28px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      gap: 4px;
+    }
+
+    .url-bar input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Ferramentas -->
+  <div id="toolbar">
+    <div class="btn-group">
+      <button onclick="setLayout(1)" id="btn-1" class="active">1 Tela</button>
+      <button onclick="setLayout(2)" id="btn-2">2 Telas</button>
+      <button onclick="setLayout(3)" id="btn-3">3 Telas</button>
+      <button onclick="setLayout(4)" id="btn-4">4 Telas</button>
+    </div>
+  </div>
+
+  <!-- Container do Grid -->
+  <div id="grid-container" class="grid-1">
+    
+    <!-- Quadrante 1 -->
+    <div class="browser-box" id="box-1">
+      <div class="url-bar">
+        <input type="text" id="url-1" value="https://poke.idleworld.online/login" placeholder="URL do Jogo 1">
+        <button onclick="loadUrl(1)">Go</button>
+      </div>
+      <iframe id="frame-1" src="about:blank"></iframe>
+    </div>
+
+    <!-- Quadrante 2 -->
+    <div class="browser-box hidden" id="box-2">
+      <div class="url-bar">
+        <input type="text" id="url-2" value="https://poke.idleworld.online/login" placeholder="URL do Jogo 2">
+        <button onclick="loadUrl(2)">Go</button>
+      </div>
+      <iframe id="frame-2" src="about:blank"></iframe>
+    </div>
+
+    <!-- Quadrante 3 -->
+    <div class="browser-box hidden" id="box-3">
+      <div class="url-bar">
+        <input type="text" id="url-3" value="https://poke.idleworld.online/login" placeholder="URL do Jogo 3">
+        <button onclick="loadUrl(3)">Go</button>
+      </div>
+      <iframe id="frame-3" src="about:blank"></iframe>
+    </div>
+
+    <!-- Quadrante 4 -->
+    <div class="browser-box hidden" id="box-4">
+      <div class="url-bar">
+        <input type="text" id="url-4" value="https://poke.idleworld.online/login" placeholder="URL do Jogo 4">
+        <button onclick="loadUrl(4)">Go</button>
+      </div>
+      <iframe id="frame-4" src="about:blank"></iframe>
+    </div>
+
+  </div>
+
+  <script>
+    let activeLayout = 1;
+
+    function setLayout(count) {
+      activeLayout = count;
+      const container = document.getElementById('grid-container');
+      container.className = `grid-${count}`;
+
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`btn-${i}`).classList.toggle('active', i === count);
+        const box = document.getElementById(`box-${i}`);
+        const frame = document.getElementById(`frame-${i}`);
+
+        if (i <= count) {
+          box.classList.remove('hidden');
+          if (frame.src === "about:blank" || frame.src === "") {
+            loadUrl(i);
+          }
+        } else {
+          box.classList.add('hidden');
+        }
+      }
+    }
+
+    function loadUrl(id) {
+      const url = document.getElementById(`url-${id}`).value;
+      const frame = document.getElementById(`frame-${id}`);
+      if (url && url !== 'about:blank') {
+        frame.src = url.startsWith('http') ? url : `https://${url}`;
+      }
+    }
+
+    window.onload = () => {
+      loadUrl(1);
+    };
+  </script>
+</body>
+</html>
