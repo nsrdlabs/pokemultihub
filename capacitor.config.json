@@ -1,0 +1,6 @@
+{
+  "appId": "com.pokemulti.hub",
+  "appName": "PokeMulti Hub",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
